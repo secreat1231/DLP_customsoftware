@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+.venv/
+venv/
+env/
+
+build/
+dist/
+*.log
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Runtime/exported data
+DLP_Parameter_Log.csv
+
+# Local editor and OS files
+.idea/
+.vscode/
+*.swp
+Thumbs.db
+Desktop.ini

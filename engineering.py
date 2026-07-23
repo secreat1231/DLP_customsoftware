@@ -3,12 +3,37 @@ from PyQt6.QtCore import Qt
 from PyQt6 import uic
 from main import DLP_function
 import csv
+import sys
+import os
+
+
+def resource_path(relative_path):
+    """ 取得資源的絕對路徑，支援開發環境與 PyInstaller 打包後的暫存環境 """
+    try:
+        # PyInstaller 打包後，會將暫存路徑存在 sys._MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        # 如果是在開發環境 (直接執行 py 檔)，就使用目前工作目錄
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
+
+
+
+
+
+
+
+
+
 class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還是 Dialog
     def __init__(self,dlp_instance):
         super().__init__()
-        
+
         # 載入工程模式的 UI 檔案
-        uic.loadUi("EngineeringWindow (3).ui", self)
+        uic.loadUi(resource_path("EngineeringWindow (3).ui"), self)
         self.tableWidget.setRowCount(0)
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents) # 均分寬度
         self.tableWidget.horizontalHeader().setStretchLastSection(True)
@@ -31,13 +56,13 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
         self.real_hex_cmd = 0x00
 
         self.illumination_bin_select_map = {
-            0: 0x00, 
+            0: 0x00,
             1: 0x01,
             2: 0x02,
             3: 0x03,
             4: 0x04,
             5: 0x05,
-            6: 0x06, 
+            6: 0x06,
             7: 0x07,
             8: 0x08,
             9: 0x09,
@@ -46,17 +71,17 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
         }
 
         self.operating_mode_select_map = {
-            0: 0x00, 
+            0: 0x00,
             1: 0x01,
             2: 0x02,
         }
-        
+
         # 如果工程模式裡面有按鈕，可以在這裡綁定
         self.setup_eng_connections()
 
     def setup_eng_connections(self):
-        
-        
+
+
         self.illumination_bin_select.currentIndexChanged.connect(lambda index: self.on_illumination_bin_select(index))
         self.operating_mode_select.currentIndexChanged.connect(lambda index: self.on_operating_mode_select(index))
 
@@ -89,8 +114,8 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
 
     def on_illumination_bin_select(self , index):
         self.real_hex_cmd = self.illumination_bin_select_map.get(index)
-        self.dlp.illumination_bin_select(self.real_hex_cmd)    
-        
+        self.dlp.illumination_bin_select(self.real_hex_cmd)
+
     def on_operating_mode_select(self , index):
         self.real_hex_cmd = self.operating_mode_select_map.get(index)
         self.dlp.operating_mode(self.real_hex_cmd)
@@ -106,7 +131,7 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
         self.limit_R_value = self.daclimits_R.value()
         self.limit_G_value = self.daclimits_G.value()
         self.limit_B_value = self.daclimits_B.value()
-        self.dlp.rgb_limits(self.limit_R_value,self.limit_G_value,self.limit_B_value)  
+        self.dlp.rgb_limits(self.limit_R_value,self.limit_G_value,self.limit_B_value)
 
     def on_dacblanks_SpinBox(self, *args):
         self.blank_R_value = self.dacblanks_R.value()
@@ -120,7 +145,7 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
         self.dlp.tps99000_Q1_drive_mode(self.feedback_val, self.cmode_val)
 
     def send_command(self):
-        self.dlp.illumination_bin_select(self.real_hex_cmd) 
+        self.dlp.illumination_bin_select(self.real_hex_cmd)
         self.dlp.rgb_dac_levels(0x00,self.dac_R_value,self.dac_G_value,self.dac_B_value)
         self.dlp.rgb_limits(self.limit_R_value,self.limit_G_value,self.limit_B_value)
         self.dlp.blanking_levels(self.blank_R_value,self.blank_G_value,self.blank_B_value)
@@ -131,17 +156,17 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
 
     def add_record_to_table(self):
         """抓取目前畫面上所有的參數，並新增一行到表格中"""
-        
+
         # ------------------------------------------------
         # 1. 抓取所有上面元件的目前數值 (請依照你實際的 objectName 修改)
         # ------------------------------------------------
-        
+
         # A(分階): 通常是看現在有幾行，就當作第幾階 (0, 1, 2...)
         step_index = str(self.tableWidget.rowCount())
-        
+
         # B(流明): 圖片裡沒看到輸入框，通常是外接輝度計，這裡先留空
-        lumens_val = "" 
-        
+        lumens_val = ""
+
         # C(CM/DM): 假設你用的是一個紀錄狀態的變數，或是 CheckBox
         # 這裡用假字串示範，你可以替換成 self.drive_mode_CMODE 轉換的字串
         is_cmode = self.drive_mode_CMODE.isChecked()
@@ -155,10 +180,10 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
         limit_val = f"{self.limit_R_value}, {self.limit_G_value}, {self.limit_B_value}"
         blank_val = f"{self.blank_R_value}, {self.blank_G_value}, {self.blank_B_value}"
         driver_val = f"{feedback_val}, {cmdm_val}"
-        duty_val = self.illumination_bin_select.currentText() 
-        
+        duty_val = self.illumination_bin_select.currentText()
+
         # G(Dimming): 圖片說是輸入框，抓取 value() 並轉成字串
-        #dimming_val = str(self.input_dimming.value()) 
+        #dimming_val = str(self.input_dimming.value())
 
         # ------------------------------------------------
         # 2. 在表格最後面「新增一列 (Row)」
@@ -171,41 +196,41 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
         # ------------------------------------------------
         # 語法：setItem(第幾列, 第幾欄, QTableWidgetItem("文字"))
         row_data = [
-            step_index, 
-            lumens_val, 
-            driver_val, 
-            dac_val, 
-            limit_val, 
-            blank_val, 
+            step_index,
+            lumens_val,
+            driver_val,
+            dac_val,
+            limit_val,
+            blank_val,
             duty_val,
             #dimming_val
         ]
-        
+
         # 🌟 用迴圈一次跑完 7 個欄位
         for col_index, text_val in enumerate(row_data):
             item = QTableWidgetItem(text_val)
             # 設定文字對齊方式：水平置中 + 垂直置中
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter) 
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.tableWidget.setItem(current_row_count, col_index, item)
-        
+
         # ------------------------------------------------
         # 4. 貼心 UX：讓表格自動捲動到最下面，方便查看最新紀錄
         # ------------------------------------------------
         self.tableWidget.scrollToBottom()
         self.update_slider_range()
-        
+
         print(f"✅ 已紀錄第 {step_index} 階資料！")
 
     def delete_selected_row(self):
         """刪除使用者目前用滑鼠點選的那一列"""
         # 取得目前選取的行號 (如果是 -1 代表沒有選取任何東西)
-        current_row = self.tableWidget.currentRow() 
-        
+        current_row = self.tableWidget.currentRow()
+
         if current_row >= 0:
             # 執行刪除
             self.tableWidget.removeRow(current_row)
             print(f"🗑️ 已刪除第 {current_row} 列資料")
-            
+
             # 🌟 刪除後，重新整理 A(分階) 的序號，確保它永遠是 0, 1, 2, 3...
             self.renumber_steps()
         else:
@@ -222,7 +247,7 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
     def update_slider_range(self):
         """根據表格目前的資料筆數，自動調整 Slider 的最大值"""
         row_count = self.tableWidget.rowCount()
-        
+
         if row_count == 0:
             self.dimmingSlider.setMaximum(0)
             self.dimmingSlider.setEnabled(False) # 沒資料時先反灰禁用
@@ -230,16 +255,16 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
             self.dimmingSlider.setEnabled(True)
             # 依照你的需求：預設最少 10 階，超過就跟著表格長大
             # row_count - 1 是因為索引是從 0 開始
-            dynamic_max = max(7, row_count - 1) 
+            dynamic_max = max(7, row_count - 1)
             self.dimmingSlider.setMaximum(dynamic_max)
 
     def sync_record_to_ui(self, index):
         """當 Slider 拖動時，抓取對應階層的資料並套用到 UI 與硬體"""
-        
+
         # 防呆：如果拉到的階層超過目前表格真實有的資料（例如表格只有 5 筆，但 slider 刻度在 8）
         if index >= self.tableWidget.rowCount():
             return
-            
+
         print(f"⏪ 正在同步回放第 {index} 階的參數...")
 
         # ------------------------------------------------
@@ -249,18 +274,18 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
         driver_str = self.tableWidget.item(index, 2).text()
         feedback_val, cmode_val = map(int, driver_str.replace(" ", "").split(","))
         feedback_int, cmode_int = int(feedback_val), int(cmode_val)
-        self.dlp.tps99000_Q1_drive_mode(feedback_int,cmode_int) 
+        self.dlp.tps99000_Q1_drive_mode(feedback_int,cmode_int)
 
 
-        dac_str = self.tableWidget.item(index, 3).text()        
+        dac_str = self.tableWidget.item(index, 3).text()
         r_val, g_val, b_val = map(int, dac_str.replace(" ", "").split(","))
         self.dlp.rgb_dac_levels(0x00,r_val,g_val,b_val)
-        
+
 
         limit_str = self.tableWidget.item(index, 4).text()
         lr, lg, lb = map(int, limit_str.replace(" ", "").split(","))
         self.dlp.rgb_limits(lr, lg, lb)
-        
+
         blank_str = self.tableWidget.item(index, 5).text()
         br, bg, bb = map(int, blank_str.replace(" ", "").split(","))
         self.dlp.blanking_levels(br, bg, bb)
@@ -268,9 +293,9 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
         duty_str = self.tableWidget.item(index, 6).text()
         combo_index = self.illumination_bin_select.findText(duty_str)
         real_hex_cmd = self.illumination_bin_select_map.get(combo_index)
-        self.dlp.illumination_bin_select(real_hex_cmd) 
+        self.dlp.illumination_bin_select(real_hex_cmd)
 
-        
+
 
     def save_table_data(self):
         """將目前 QTableWidget 裡的資料儲存至 CSV 檔案"""
@@ -283,8 +308,8 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
 
         # 1. 讓使用者選擇儲存位置與檔名
         file_path, _ = QFileDialog.getSaveFileName(
-            self, 
-            "儲存參數紀錄表", 
+            self,
+            "儲存參數紀錄表",
             "DLP_Parameter_Log.csv",  # 預設檔名
             "CSV 檔案 (*.csv);;所有檔案 (*.*)"
         )
@@ -324,9 +349,9 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
     def import_table_data(self):
         """從 CSV 讀取資料並填回 QTableWidget"""
         file_path, _ = QFileDialog.getOpenFileName(
-            self, 
-            "選擇要匯入的參數紀錄表", 
-            "", 
+            self,
+            "選擇要匯入的參數紀錄表",
+            "",
             "CSV 檔案 (*.csv);;所有檔案 (*.*)"
         )
 
@@ -353,7 +378,7 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
 
             for row_index, row_data in enumerate(data_rows):
                 self.tableWidget.insertRow(row_index)
-                
+
                 # 將每一欄的資料塞入表格
                 for col_index, text_val in enumerate(row_data):
                     # 避免 CSV 的欄位數超過我們表格現有的欄位數

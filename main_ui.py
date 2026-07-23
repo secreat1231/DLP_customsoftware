@@ -7,6 +7,8 @@ from PyQt6 import uic
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PyQt6.QtMultimediaWidgets import QVideoWidget
 
+from customer_style import apply_customer_style, get_customer_name
+
 
 
 
@@ -16,6 +18,20 @@ from engineering import EngineeringWindow
 # ==========================================
 # 🌟 新增：專屬的無邊框投影布幕與輪播引擎
 # ==========================================
+def resource_path(relative_path):
+    """ 取得資源的絕對路徑，支援開發環境與 PyInstaller 打包後的暫存環境 """
+    try:
+        # PyInstaller 打包後，會將暫存路徑存在 sys._MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        # 如果是在開發環境 (直接執行 py 檔)，就使用目前工作目錄
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
+
+
 class ProjectionWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -38,15 +54,15 @@ class ProjectionWindow(QWidget):
         self.audio_output = QAudioOutput() # PyQt6 必須要掛音訊輸出，否則沒聲音
         self.player.setAudioOutput(self.audio_output)
         self.player.setVideoOutput(self.video_widget)
-        
+
         # 設定影片無限輪迴播放 (測試 Pattern 必備)
         self.player.setLoops(-1)
 
-        self.media_list = []      
-        self.current_index = 0    
-        
+        self.media_list = []
+        self.current_index = 0
 
-        
+
+
 
 
     def load_folder(self, folder_path):
@@ -54,7 +70,7 @@ class ProjectionWindow(QWidget):
         # 🌟 擴增支援的副檔名，把影片加進去
         valid_exts = {'.png', '.jpg', '.jpeg', '.bmp', '.mp4', '.avi', '.mov', '.mkv'}
         self.media_list = []
-        
+
         for file_name in os.listdir(folder_path):
             ext = os.path.splitext(file_name)[1].lower()
             if ext in valid_exts:
@@ -85,12 +101,12 @@ class ProjectionWindow(QWidget):
         """核心邏輯：判斷是圖片還是影片，並自動切換圖層"""
         path = self.media_list[self.current_index]
         ext = os.path.splitext(path)[1].lower()
-        
+
         # 分類：這是不是影片？
         if ext in {'.mp4', '.avi', '.mov', '.mkv'}:
             # 🎬 切換到影片圖層
             self.layout.setCurrentWidget(self.video_widget)
-            
+
             # PyQt6 讀取本機檔案必須用 QUrl.fromLocalFile 轉換
             self.player.setSource(QUrl.fromLocalFile(path))
             self.player.play()
@@ -98,7 +114,7 @@ class ProjectionWindow(QWidget):
             # 🖼️ 切換到圖片圖層
             self.player.stop() # 確保如果上一張是影片，先把它停掉
             self.layout.setCurrentWidget(self.image_label)
-            
+
             pixmap = QPixmap(path)
             scaled_pixmap = pixmap.scaled(self.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
             self.image_label.setPixmap(scaled_pixmap)
@@ -122,24 +138,24 @@ class ProjectionWindow(QWidget):
 class DLP_GUI(QMainWindow):
     def __init__(self):
         super().__init__()
-        
-        uic.loadUi("test (2).ui", self)
-        
+
+        uic.loadUi(resource_path("test (2).ui"), self)
+
         # 圖片載入
-        ShortAxisFlip = QPixmap("ShortAxisFlip.png")
-        LongAxisFlip = QPixmap("LongAxisFlip.png")
+        ShortAxisFlip = QPixmap(resource_path("ShortAxisFlip.png"))
+        LongAxisFlip = QPixmap(resource_path("LongAxisFlip.png"))
         self.ShortAxisFlip.setPixmap(ShortAxisFlip)
         self.LongAxisFlip.setPixmap(LongAxisFlip)
-        
+
         # 2. 初始化底層硬體
         self.dlp = DLP_function()
-        
+
         # 宣告投影視窗變數
         self.proj_window = None
         self.is_powered_on = True
         # system mode mapping
         self.system_mode_map = {
-            0: 0x00, 
+            0: 0x00,
             1: 0x01,
             2: 0x03,
             3: 0x02,
@@ -152,7 +168,7 @@ class DLP_GUI(QMainWindow):
         }
 
         self.degamma_select_map = {
-            0: 0x00, 
+            0: 0x00,
             1: 0x01,
         }
 
@@ -221,17 +237,17 @@ class DLP_GUI(QMainWindow):
 
 
         for btn in self.findChildren(QPushButton):
-            if btn.objectName() != "btn_off": 
+            if btn.objectName() != "btn_off":
                 btn.installEventFilter(self)
-                
+
         # 鎖定所有滑桿
         for slider in self.findChildren(QSlider):
             slider.installEventFilter(self)
-            
+
         # 鎖定所有數字框
         for spin in self.findChildren(QSpinBox):
             spin.installEventFilter(self)
-            
+
         # 鎖定所有下拉選單
         for combo in self.findChildren(QComboBox):
             combo.installEventFilter(self)
@@ -258,11 +274,11 @@ class DLP_GUI(QMainWindow):
     def on_flip_changed(self):
         is_v_checked = self.LongAxisFlip_checkBox.isChecked()
         is_h_checked = self.ShortAxisFlip_checkBox.isChecked()
-        
+
         mode_val = 0x00
-        if is_h_checked: mode_val |= 0x01  
-        if is_v_checked: mode_val |= 0x02  
-            
+        if is_h_checked: mode_val |= 0x01
+        if is_v_checked: mode_val |= 0x02
+
         print(f"🔄 翻轉狀態改變: 水平={is_h_checked}, 垂直={is_v_checked} -> 發送指令: 0x{mode_val:02X}")
         self.dlp.display_image_orientation(mode_val)
 
@@ -298,16 +314,16 @@ class DLP_GUI(QMainWindow):
     def eventFilter(self, obj, event):
         # 偵測是否發生了「滑鼠左鍵點擊」的事件
         if event.type() == QEvent.Type.MouseButtonPress:
-            
+
             # 如果目前是「斷電狀態 (False)」
             if  not self.is_powered_on:
                 # 跳出你指定的英文警告彈窗
                 QMessageBox.warning(self, "Warning", "Warning! Please power on before executing.")
-                
+
                 # 🌟 關鍵：回傳 True 代表「這個點擊事件我已經沒收處理了」
                 # 底層的按鈕就不會收到訊號，原本的發送/紀錄/刪除功能就不會被執行！
                 return True
-                
+
         # 如果有通電，或者是其他的事件 (例如滑鼠移動)，就正常放行
         return super().eventFilter(obj, event)
 
@@ -321,39 +337,39 @@ class DLP_GUI(QMainWindow):
         self.dlp.execute_batch_command_set(0x00)
         if not folder_path:
             return # 使用者按了取消
-            
+
         print(f"✅ 使用者選擇了資料夾: {folder_path}")
         self.start_auto_projection(folder_path)
 
 
     def close_projection(self):
         """關閉無邊框投影視窗，讓 DLP 顯示原本的 Windows 桌面"""
-        
+
         # 檢查投影視窗是否存在，且正在顯示中
         if self.proj_window and self.proj_window.isVisible():
             # 1. 停止影片播放 (確保記憶體與音效被釋放)
             self.proj_window.player.stop()
-            
+
             # 2. 關閉視窗
             self.proj_window.close()
-            
+
             # 3. 徹底清空變數，下次點擊資料夾時會重新生成一個乾淨的
-            self.proj_window = None 
-            
+            self.proj_window = None
+
             # 4. 更新主控台的狀態文字
             self.windows_path.setText("📂 Display Status: \n🖥️ Projection Disabled (Desktop Mode)")
             print("🛑 投影已關閉，返回 Windows 桌面")
-            
+
             # (選擇性防呆) 確保 DLP 確實處於外部影像源模式
             self.dlp.execute_batch_command_set(0x00)
-            
+
         else:
             self.dlp.execute_batch_command_set(0x00)
             print("投放桌面")
-            
 
 
-            
+
+
     def find_dlp_screen(self):
         """掃描尋找 1152x576 的那一個螢幕"""
         screens = QApplication.screens()
@@ -372,13 +388,13 @@ class DLP_GUI(QMainWindow):
 
         if self.proj_window is None:
             self.proj_window = ProjectionWindow()
-            
+
         self.proj_window.setGeometry(dlp_screen.geometry())
         self.proj_window.showFullScreen()
-        
+
         # 🌟 呼叫 load_folder，它現在會回傳是否成功，以及第一張圖的路徑
         success, first_image_path = self.proj_window.load_folder(folder_path)
-        
+
         if success:
             # 成功讀取！更新主控台的文字
             self.windows_path.setText(f"📂 Display Status: \n{first_image_path}")
@@ -407,7 +423,7 @@ class DLP_GUI(QMainWindow):
     # ==========================================
     def keyPressEvent(self, event):
         """攔截主視窗的鍵盤輸入，偵測工程密碼"""
-        
+
         # 1. 如果按下的是 Enter 鍵 (包含大鍵盤跟數字鍵盤的 Enter)
         if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
             # 檢查記憶體最後三個字是不是 "gis"
@@ -416,12 +432,12 @@ class DLP_GUI(QMainWindow):
                 self.dlp.operating_mode(0x02)
             # 不管密碼對不對，按下 Enter 後就清空記憶體，重新來過
             self.secret_buffer = ""
-            
+
         # 2. 如果按下的是一般字母，就記錄下來
         elif event.text():
             # 轉成小寫加到緩衝區，這樣使用者開著大寫鎖定打 "GIS" 也能通
             self.secret_buffer += event.text().lower()
-            
+
             # 防呆：避免使用者亂打一通導致記憶體爆掉，我們永遠只留最後 10 個字元
             self.secret_buffer = self.secret_buffer[-10:]
 
@@ -430,15 +446,15 @@ class DLP_GUI(QMainWindow):
 
     def unlock_engineering_mode(self):
         print("🔓 密碼正確！開啟工程模式視窗！")
-        
+
         # 跳出提示框給個回饋
         QMessageBox.information(self, "解鎖成功", "權限已提升：進入工程模式")
-        
+
         # 顯示你另外寫好的工程視窗 (假設你建了一個 EngineeringWindow 類別)
         if self.EngineeringWindow is None:
             self.EngineeringWindow = EngineeringWindow(self.dlp)
-            #self.EngineeringWindow.dlp = self.dlp 
-            
+            #self.EngineeringWindow.dlp = self.dlp
+
         # 🌟 3. 顯示視窗
         self.EngineeringWindow.show()
         self.EngineeringWindow.raise_()
@@ -457,9 +473,11 @@ class DLP_GUI(QMainWindow):
 # ==========================================
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-  
-   
-    
+    customer_name = get_customer_name()
+    apply_customer_style(app, customer_name)
+
+
+
     window = DLP_GUI()
     window.show()
     sys.exit(app.exec())
