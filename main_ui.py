@@ -1,13 +1,13 @@
 import sys
 import os
-from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QWidget, QLabel ,QStackedLayout ,QPushButton ,QSlider, QSpinBox, QComboBox ,QCheckBox
-from PyQt6.QtGui import QPixmap
-from PyQt6.QtCore import Qt, QUrl ,QEvent
-from PyQt6 import uic
-from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
-from PyQt6.QtMultimediaWidgets import QVideoWidget
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QWidget, QLabel ,QStackedLayout ,QPushButton ,QSlider, QSpinBox, QComboBox ,QCheckBox
+from PySide6.QtGui import QPixmap
+from PySide6.QtCore import Qt, QUrl ,QEvent
+from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
+from PySide6.QtMultimediaWidgets import QVideoWidget
 
 from customer_style import DEFAULT_CUSTOMER, apply_customer_style, get_customer_name
+from qt_loader import load_ui
 
 
 
@@ -51,7 +51,7 @@ class ProjectionWindow(QWidget):
 
         # 3. 初始化解碼大腦 (QMediaPlayer)
         self.player = QMediaPlayer()
-        self.audio_output = QAudioOutput() # PyQt6 必須要掛音訊輸出，否則沒聲音
+        self.audio_output = QAudioOutput() # PySide6 必須要掛音訊輸出，否則沒聲音
         self.player.setAudioOutput(self.audio_output)
         self.player.setVideoOutput(self.video_widget)
 
@@ -107,7 +107,7 @@ class ProjectionWindow(QWidget):
             # 🎬 切換到影片圖層
             self.layout.setCurrentWidget(self.video_widget)
 
-            # PyQt6 讀取本機檔案必須用 QUrl.fromLocalFile 轉換
+            # PySide6 讀取本機檔案必須用 QUrl.fromLocalFile 轉換
             self.player.setSource(QUrl.fromLocalFile(path))
             self.player.play()
         else:
@@ -140,7 +140,7 @@ class DLP_GUI(QMainWindow):
         super().__init__()
         self.customer_name = customer_name
 
-        uic.loadUi(resource_path("test (2).ui"), self)
+        load_ui(resource_path("test (2).ui"), self)
 
         # 圖片載入
         ShortAxisFlip = QPixmap(resource_path("ShortAxisFlip.png"))

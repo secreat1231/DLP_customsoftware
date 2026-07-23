@@ -1,6 +1,6 @@
 # DLP Custom Software
 
-PyQt6 desktop controller for DLP projection workflows using the Total Phase Cheetah SPI adapter.
+PySide6 desktop controller for DLP projection workflows using the Total Phase Cheetah SPI adapter.
 
 ## Project Layout
 

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Form</class>
  <widget class="QWidget" name="Form">
@@ -184,7 +184,7 @@ QSlider::sub-page:horizontal {
         </size>
        </property>
        <property name="title">
-        <string>DAC ?閮剖?</string>
+        <string>DAC 參數設定</string>
        </property>
        <layout class="QGridLayout" name="dacGridLayout">
         <property name="horizontalSpacing">
@@ -262,7 +262,7 @@ QSlider::sub-page:horizontal {
          <widget class="QLabel" name="label_11">
           <property name="text">
            <string>DAC Blanks
-(0??023)</string>
+(0–1023)</string>
           </property>
          </widget>
         </item>
@@ -309,7 +309,7 @@ QSlider::sub-page:horizontal {
          <widget class="QLabel" name="label_13">
           <property name="text">
            <string>DAC Levels
-(0??095)</string>
+(0–4095)</string>
           </property>
          </widget>
         </item>
@@ -330,14 +330,14 @@ QSlider::sub-page:horizontal {
          <widget class="QLabel" name="label_12">
           <property name="text">
            <string>DAC Limits
-(0??023)</string>
+(0–1023)</string>
           </property>
          </widget>
         </item>
         <item row="2" column="4">
          <widget class="QPushButton" name="btn_send">
           <property name="text">
-           <string>?潮?/string>
+           <string>發送</string>
           </property>
          </widget>
         </item>
@@ -364,7 +364,7 @@ QSlider::sub-page:horizontal {
           </size>
          </property>
          <property name="title">
-          <string>憿舐內 / 撽?璅∪?</string>
+          <string>顯示 / 驅動模式</string>
          </property>
          <layout class="QFormLayout" name="modeFormLayout">
           <property name="horizontalSpacing">
@@ -382,7 +382,7 @@ QSlider::sub-page:horizontal {
           <item row="0" column="0">
            <widget class="QLabel" name="operatingModeLabel">
             <property name="text">
-             <string>撌乩?璅∪?</string>
+             <string>工作模式</string>
             </property>
            </widget>
           </item>
@@ -414,7 +414,7 @@ QSlider::sub-page:horizontal {
           <item row="1" column="0">
            <widget class="QLabel" name="illuminationLabel">
             <property name="text">
-             <string>?扳? Bin ?豢?</string>
+             <string>照明 Bin 選擇</string>
             </property>
            </widget>
           </item>
@@ -524,7 +524,7 @@ QSlider::sub-page:horizontal {
       </size>
      </property>
      <property name="title">
-      <string>Dimming 皜祈岫</string>
+      <string>Dimming 測試</string>
      </property>
      <layout class="QVBoxLayout" name="dimmingVLayout">
       <property name="spacing">
@@ -584,7 +584,7 @@ QSlider::sub-page:horizontal {
       </size>
      </property>
      <property name="title">
-      <string>甇仿?閮?銵?/string>
+      <string>步階記錄表</string>
      </property>
      <layout class="QVBoxLayout" name="recordVLayout">
       <item>
@@ -595,14 +595,14 @@ QSlider::sub-page:horizontal {
         <item>
          <widget class="QPushButton" name="btn_import">
           <property name="text">
-           <string>?臬銵冽</string>
+           <string>匯入表格</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="btn_save">
           <property name="text">
-           <string>?臬銵冽</string>
+           <string>匯出表格</string>
           </property>
          </widget>
         </item>
@@ -622,14 +622,14 @@ QSlider::sub-page:horizontal {
         <item>
          <widget class="QPushButton" name="btn_record">
           <property name="text">
-           <string>蝝??/string>
+           <string>紀錄</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="btn_delete">
           <property name="text">
-           <string>?芷</string>
+           <string>刪除</string>
           </property>
          </widget>
         </item>
@@ -657,12 +657,12 @@ QSlider::sub-page:horizontal {
         </attribute>
         <column>
          <property name="text">
-          <string>A(??)</string>
+          <string>A(分階)</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>B(瘚?)</string>
+          <string>B(流明)</string>
          </property>
         </column>
         <column>
@@ -705,4 +705,3 @@ QSlider::sub-page:horizontal {
  <resources/>
  <connections/>
 </ui>
-

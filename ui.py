@@ -1,8 +1,8 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow ,QToolTip
-from PyQt6.QtGui import QPixmap ,QCursor
-from PyQt6.QtCore import Qt
-from PyQt6 import uic
+from PySide6.QtWidgets import QApplication, QMainWindow ,QToolTip
+from PySide6.QtGui import QPixmap ,QCursor
+from PySide6.QtCore import Qt
+from qt_loader import load_ui
 
 
 import time
@@ -14,10 +14,10 @@ from main import DLP_function
 class DLP_GUI(QMainWindow):
     def __init__(self):
         super().__init__()
-        
+
         # 1. 載入你剛剛畫好的 UI 檔案
         # 這行會施展魔法：自動幫你把 btn_r, btn_g 變成 self.btn_r, self.btn_g！
-        uic.loadUi("test.ui", self)
+        load_ui("test.ui", self)
         ShortAxisFlip = QPixmap("ShortAxisFlip.png")
         LongAxisFlip = QPixmap("LongAxisFlip.png")
         #pixmap = pixmap.scaled(200, 100, aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio)
@@ -25,10 +25,10 @@ class DLP_GUI(QMainWindow):
         self.LongAxisFlip.setPixmap(LongAxisFlip)
         # 2. 初始化底層硬體
         self.dlp = DLP_function()
-        
+
         #system mode mapping
         self.system_mode_map = {
-            0: 0x00, 
+            0: 0x00,
             1: 0x01,
             2: 0x03,
             3: 0x02,
@@ -40,7 +40,7 @@ class DLP_GUI(QMainWindow):
             2: 0x09,
             3: 0x0A,
             4: 0x0B,
-            5: 0x0C,        
+            5: 0x0C,
             6: 0x0D,
             7: 0x16,
             8: 0x10,
@@ -50,7 +50,7 @@ class DLP_GUI(QMainWindow):
         }
 
         self.degamma_select_map = {
-            0: 0x00, 
+            0: 0x00,
             1: 0x01,
         }
 
@@ -127,13 +127,13 @@ class DLP_GUI(QMainWindow):
         """
         is_h_checked = self.LongAxisFlip_checkBox.isChecked()
         is_v_checked = self.ShortAxisFlip_checkBox.isChecked()
-        
+
         mode_val = 0x00
         if is_h_checked:
             mode_val |= 0x01  # 把 Bit 0 設為 1 (加 1)
         if is_v_checked:
             mode_val |= 0x02  # 把 Bit 1 設為 1 (加 2)
-            
+
         print(f"🔄 翻轉狀態改變: 水平={is_h_checked}, 垂直={is_v_checked} -> 發送指令: 0x{mode_val:02X}")
         # 4. 直接呼叫你的硬體大腦 (發送 0x18 指令)
         self.dlp.display_image_orientation(mode_val)
@@ -169,7 +169,7 @@ class DLP_GUI(QMainWindow):
             # 利用解析度特徵來鎖定硬體
             if geom.width() == 1152 and geom.height() == 576:
                 return screen
-        
+
         # 如果找了一圈都沒找到，回傳 None
         return None
 
@@ -191,11 +191,11 @@ class DLP_GUI(QMainWindow):
         # 3. 建立並發射投影視窗
         if self.proj_window is None:
             self.proj_window = ProjectionWindow()
-            
+
         # 🌟 直接將視窗搬到該螢幕的座標上，並強制全螢幕
         self.proj_window.setGeometry(dlp_screen.geometry())
         self.proj_window.showFullScreen()
-        
+
         # 4. 指示投影視窗載入指定路徑的圖片 (這裡換成你的實際路徑)
         target_file_path = "D:/Desktop/DLP_customsoftware/test_pattern.png"
         self.proj_window.show_image(target_file_path)

@@ -1,8 +1,8 @@
-from PyQt6.QtWidgets import QWidget ,QTableWidgetItem ,QHeaderView ,QMessageBox, QFileDialog
-from PyQt6.QtCore import Qt
-from PyQt6 import uic
+from PySide6.QtWidgets import QWidget ,QTableWidgetItem ,QHeaderView ,QMessageBox, QFileDialog
+from PySide6.QtCore import Qt
 from main import DLP_function
 from customer_style import DEFAULT_CUSTOMER, customer_resource_path
+from qt_loader import load_ui
 import csv
 import sys
 import os
@@ -34,7 +34,7 @@ class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還
         super().__init__()
 
         # 載入工程模式的 UI 檔案
-        uic.loadUi(customer_resource_path("EngineeringWindow (3).ui", customer_name), self)
+        load_ui(customer_resource_path("EngineeringWindow (3).ui", customer_name), self)
         self.tableWidget.setRowCount(0)
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents) # 均分寬度
         self.tableWidget.horizontalHeader().setStretchLastSection(True)
