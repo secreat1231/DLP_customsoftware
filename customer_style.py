@@ -24,6 +24,15 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
+def customer_resource_path(relative_path, customer_name):
+    customer_path = resource_path(os.path.join("customers", customer_name, relative_path))
+
+    if os.path.exists(customer_path):
+        return customer_path
+
+    return resource_path(relative_path)
+
+
 def apply_customer_style(app, customer_name):
     style_path = resource_path(os.path.join("customers", customer_name, "style.qss"))
 

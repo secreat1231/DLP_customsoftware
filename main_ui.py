@@ -7,7 +7,7 @@ from PyQt6 import uic
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PyQt6.QtMultimediaWidgets import QVideoWidget
 
-from customer_style import apply_customer_style, get_customer_name
+from customer_style import DEFAULT_CUSTOMER, apply_customer_style, get_customer_name
 
 
 
@@ -136,8 +136,9 @@ class ProjectionWindow(QWidget):
 # 🌟 主控台介面
 # ==========================================
 class DLP_GUI(QMainWindow):
-    def __init__(self):
+    def __init__(self, customer_name=DEFAULT_CUSTOMER):
         super().__init__()
+        self.customer_name = customer_name
 
         uic.loadUi(resource_path("test (2).ui"), self)
 
@@ -452,7 +453,7 @@ class DLP_GUI(QMainWindow):
 
         # 顯示你另外寫好的工程視窗 (假設你建了一個 EngineeringWindow 類別)
         if self.EngineeringWindow is None:
-            self.EngineeringWindow = EngineeringWindow(self.dlp)
+            self.EngineeringWindow = EngineeringWindow(self.dlp, self.customer_name)
             #self.EngineeringWindow.dlp = self.dlp
 
         # 🌟 3. 顯示視窗
@@ -478,6 +479,6 @@ if __name__ == '__main__':
 
 
 
-    window = DLP_GUI()
+    window = DLP_GUI(customer_name)
     window.show()
     sys.exit(app.exec())

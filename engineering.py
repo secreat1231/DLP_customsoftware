@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import QWidget ,QTableWidgetItem ,QHeaderView ,QMessageBox,
 from PyQt6.QtCore import Qt
 from PyQt6 import uic
 from main import DLP_function
+from customer_style import DEFAULT_CUSTOMER, customer_resource_path
 import csv
 import sys
 import os
@@ -29,11 +30,11 @@ def resource_path(relative_path):
 
 
 class EngineeringWindow(QWidget): # ⚠️ 記得確認你的 .ui 是 Widget 還是 Dialog
-    def __init__(self,dlp_instance):
+    def __init__(self,dlp_instance, customer_name=DEFAULT_CUSTOMER):
         super().__init__()
 
         # 載入工程模式的 UI 檔案
-        uic.loadUi(resource_path("EngineeringWindow (3).ui"), self)
+        uic.loadUi(customer_resource_path("EngineeringWindow (3).ui", customer_name), self)
         self.tableWidget.setRowCount(0)
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents) # 均分寬度
         self.tableWidget.horizontalHeader().setStretchLastSection(True)
